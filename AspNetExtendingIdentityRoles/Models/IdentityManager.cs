@@ -5,29 +5,6 @@ using System.Collections.Generic;
 
 namespace AspNetExtendingIdentityRoles.Models
 {
-    public class ApplicationUser : IdentityUser
-    {
-        [Required]
-        public string FirstName { get; set; }
-
-        [Required]
-        public string LastName { get; set; }
-
-        [Required]
-        public string Email { get; set; }
-    }
-
-
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
-    {
-        public ApplicationDbContext()
-            : base("DefaultConnection")
-        {
-
-        }
-    }
-
-
     public class IdentityManager
     {
         public bool RoleExists(string name)
