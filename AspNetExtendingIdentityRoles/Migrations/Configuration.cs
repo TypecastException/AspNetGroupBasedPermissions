@@ -27,13 +27,13 @@ namespace AspNetExtendingIdentityRoles.Migrations
             bool success = false;
 
             var idManager = new IdentityManager();
-            success = idManager.CreateRole("Admin");
+            success = idManager.CreateRole("Admin", "Global Access");
             if (!success == true) return success;
 
-            success = idManager.CreateRole("CanEdit");
+            success = idManager.CreateRole("CanEdit", "Edit existing records");
             if (!success == true) return success;
 
-            success = idManager.CreateRole("User");
+            success = idManager.CreateRole("User", "Restricted to business domain activity");
             if (!success) return success;
 
 

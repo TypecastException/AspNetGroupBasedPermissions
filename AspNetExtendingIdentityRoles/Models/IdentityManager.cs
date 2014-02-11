@@ -15,11 +15,11 @@ namespace AspNetExtendingIdentityRoles.Models
         }
 
 
-        public bool CreateRole(string name)
+        public bool CreateRole(string name, string description = "")
         {
-            var rm = new RoleManager<IdentityRole>(
-                new RoleStore<IdentityRole>(new ApplicationDbContext()));
-            var idResult = rm.Create(new IdentityRole(name));
+            var rm = new RoleManager<ApplicationRole>(
+                new RoleStore<ApplicationRole>(new ApplicationDbContext()));
+            var idResult = rm.Create(new ApplicationRole(name, description));
             return idResult.Succeeded;
         }
 
