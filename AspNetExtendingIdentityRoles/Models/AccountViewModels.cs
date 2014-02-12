@@ -180,4 +180,34 @@ namespace AspNetExtendingIdentityRoles.Models
         public string RoleName { get; set; }
         public string Description { get; set; }
     }
+
+
+    public class RolesViewModel
+    {
+        public string RoleName { get; set; }
+        public string Description { get; set; }
+
+        public RolesViewModel() { }
+        public RolesViewModel(ApplicationRole role)
+        {
+            this.RoleName = role.Name;
+            this.Description = role.Description;
+        }
+    }
+
+
+    public class EditRolesViewModel
+    {
+        public string OriginalRoleName { get; set; }
+        public string RoleName { get; set; }
+        public string Description { get; set; }
+
+        public EditRolesViewModel() { }
+        public EditRolesViewModel(ApplicationRole role)
+        {
+            this.OriginalRoleName = role.Name;
+            this.RoleName = role.Name;
+            this.Description = role.Description;
+        }
+    }
 }
