@@ -13,7 +13,7 @@ namespace AspNetExtendingIdentityRoles.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201402110317027_init"; }
+            get { return "201402130341319_init"; }
         }
         
         string IMigrationMetadata.Source

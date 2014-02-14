@@ -5,9 +5,11 @@ using System.Collections.Generic;
 
 namespace AspNetExtendingIdentityRoles.Models
 {
-    public class ApplicationUserRole : IdentityUserRole
-    {
-        new public virtual ApplicationRole Role { get; set; }
-        new public virtual ApplicationUser User { get; set; }   
-    }
+    //public class ApplicationUserRole : IdentityUserRole
+    //{
+    //    new public virtual ApplicationRole Role { get; set; }
+    //    new public virtual ApplicationUser User { get; set; }
+    //}
+
+
 }

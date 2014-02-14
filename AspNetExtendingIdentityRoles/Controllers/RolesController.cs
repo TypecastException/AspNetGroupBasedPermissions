@@ -1,14 +1,9 @@
-﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Owin.Security;
+﻿using AspNetExtendingIdentityRoles.Models;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
 using System.Data.Entity;
-using AspNetExtendingIdentityRoles.Models;
+using System.Linq;
 using System.Net;
+using System.Web.Mvc;
 
 namespace AspNetExtendingIdentityRoles.Controllers
 {
@@ -18,10 +13,10 @@ namespace AspNetExtendingIdentityRoles.Controllers
 
         public ActionResult Index()
         {
-            var rolesList = new List<RolesViewModel>();
+            var rolesList = new List<RoleViewModel>();
             foreach(var role in _db.Roles)
             {
-                var roleModel = new RolesViewModel(role);
+                var roleModel = new RoleViewModel(role);
                 rolesList.Add(roleModel);
             }
             return View(rolesList);
@@ -38,7 +33,8 @@ namespace AspNetExtendingIdentityRoles.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public ActionResult Create([Bind(Include = "RoleName,Description")]RolesViewModel model)
+        public ActionResult Create([Bind(Include = 
+            "RoleName,Description")]RoleViewModel model)
         {
             string message = "That role name has already been used";
             if (ModelState.IsValid)
@@ -65,14 +61,15 @@ namespace AspNetExtendingIdentityRoles.Controllers
         {
             // It's actually the Role.Name tucked into the id param:
             var role = _db.Roles.First(r => r.Name == id);
-            var roleModel = new EditRolesViewModel(role);
+            var roleModel = new EditRoleViewModel(role);
             return View(roleModel);
         }
 
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public ActionResult Edit([Bind(Include = "RoleName,OriginalRoleName,Description")] EditRolesViewModel model)
+        public ActionResult Edit([Bind(Include = 
+            "RoleName,OriginalRoleName,Description")] EditRoleViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -95,7 +92,7 @@ namespace AspNetExtendingIdentityRoles.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var role = _db.Roles.First(r => r.Name == id);
-            var model = new RolesViewModel(role);
+            var model = new RoleViewModel(role);
             if (role == null)
             {
                 return HttpNotFound();

@@ -9,8 +9,9 @@ namespace AspNetExtendingIdentityRoles.Models
 {
     public class IdentityManager
     {
-        RoleManager<IdentityRole> _roleManager = new RoleManager<IdentityRole>(
-            new RoleStore<IdentityRole>(new ApplicationDbContext()));
+        // Swap ApplicationRole for IdentityRole:
+        RoleManager<ApplicationRole> _roleManager = new RoleManager<ApplicationRole>(
+            new RoleStore<ApplicationRole>(new ApplicationDbContext()));
 
         UserManager<ApplicationUser> _userManager = new UserManager<ApplicationUser>(
             new UserStore<ApplicationUser>(new ApplicationDbContext()));
@@ -26,6 +27,7 @@ namespace AspNetExtendingIdentityRoles.Models
 
         public bool CreateRole(string name, string description = "")
         {
+            // Swap ApplicationRole for IdentityRole:
             var idResult = _roleManager.Create(new ApplicationRole(name, description));
             return idResult.Succeeded;
         }
@@ -49,6 +51,7 @@ namespace AspNetExtendingIdentityRoles.Models
         {
             var user = _userManager.FindById(userId);
             var currentRoles = new List<IdentityUserRole>();
+
             currentRoles.AddRange(user.Roles);
             foreach (var role in currentRoles)
             {
