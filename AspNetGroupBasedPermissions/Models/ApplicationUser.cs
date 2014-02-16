@@ -7,6 +7,12 @@ namespace AspNetGroupBasedPermissions.Models
 {
     public class ApplicationUser : IdentityUser
     {
+        public ApplicationUser()
+            : base()
+        {
+            this.Groups = new HashSet<ApplicationUserGroup>();
+        }
+
         [Required]
         public string FirstName { get; set; }
 
@@ -15,5 +21,8 @@ namespace AspNetGroupBasedPermissions.Models
 
         [Required]
         public string Email { get; set; }
+
+        public virtual ICollection<ApplicationUserGroup> Groups { get; set; }
+
     }
 }
