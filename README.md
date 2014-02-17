@@ -1,5 +1,5 @@
-ASP.NET Extending Identity Roles
-======================================
+ASP.NET Identity: Implementing Group-Based Permissions
+======================================================
 
 This is an example project to accompany a blog post describing how to extend the ASP.NET MVC 5 Identity system and implement a Group-based permission scheme. Users belong to Groups, and Groups have sets of authorization permissions to exxecute code within the application (using [Authorize]).
 
