@@ -241,6 +241,7 @@
     <Content Include="Views\Groups\Index.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\SelectGroupEditorViewModel.cshtml" />
     <Content Include="Views\Account\UserGroups.cshtml" />
+    <Content Include="Views\Account\UserPermissions.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

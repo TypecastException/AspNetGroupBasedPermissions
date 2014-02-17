@@ -1,0 +1,31 @@
+﻿@model AspNetGroupBasedPermissions.Models.UserPermissionsViewModel
+@{ ViewBag.Title = "UserPermissions"; }
+
+<h2>Effective Role Permissions for user: @Html.DisplayFor(model => model.UserName)</h2>
+<hr />
+
+<table class="table">
+    <tr>
+        <th>
+            Role Permission
+        </th>
+        <th>
+           Description
+        </th>
+        <th></th>
+    </tr>
+    @foreach (var item in Model.Roles)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.RoleName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+        </tr>
+    }
+</table>
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

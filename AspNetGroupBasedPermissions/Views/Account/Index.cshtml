@@ -1,8 +1,5 @@
 ﻿@model IEnumerable<AspNetGroupBasedPermissions.Models.EditUserViewModel>
-
-@{
-    ViewBag.Title = "Index";
-}
+@{ ViewBag.Title = "Index"; }
 
 <h2>Index</h2>
 
@@ -42,10 +39,10 @@
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id = item.UserName }) |
-            @Html.ActionLink("Roles", "UserRoles", new { id = item.UserName }) |
+            @Html.ActionLink("Groups", "UserGroups", new { id = item.UserName }) |
+            @Html.ActionLink("Effective Permissions", "UserPermissions", new { id = item.UserName }) ||| 
             @Html.ActionLink("Delete", "Delete", new { id = item.UserName })
         </td>
     </tr>
 }
-
 </table>
