@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using AspNetGroupBasedPermissions.Models;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using System.Collections.Generic;
@@ -6,13 +7,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using AspNetGroupBasedPermissions.Models;
 
 namespace AspNetGroupBasedPermissions.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
+        ApplicationDbContext _db = new ApplicationDbContext();
+
         public AccountController()
             : this(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
         {
@@ -60,7 +62,7 @@ namespace AspNetGroupBasedPermissions.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CanEditUser")]
         public ActionResult Register()
         {
             return View();
@@ -68,7 +70,7 @@ namespace AspNetGroupBasedPermissions.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CanEditUser")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
@@ -88,7 +90,7 @@ namespace AspNetGroupBasedPermissions.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CanEditUser")]
         public ActionResult Manage(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
@@ -105,7 +107,7 @@ namespace AspNetGroupBasedPermissions.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CanEditUser")]
         public async Task<ActionResult> Manage(ManageUserViewModel model)
         {
             bool hasPassword = HasPassword();
@@ -174,11 +176,10 @@ namespace AspNetGroupBasedPermissions.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CanEditGroup, CanEditUser")]
         public ActionResult Index()
         {
-            var Db = new ApplicationDbContext();
-            var users = Db.Users;
+            var users = _db.Users;
             var model = new List<EditUserViewModel>();
             foreach (var user in users)
             {
@@ -189,11 +190,10 @@ namespace AspNetGroupBasedPermissions.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CanEditUser")]
         public ActionResult Edit(string id, ManageMessageId? Message = null)
         {
-            var Db = new ApplicationDbContext();
-            var user = Db.Users.First(u => u.UserName == id);
+            var user = _db.Users.First(u => u.UserName == id);
             var model = new EditUserViewModel(user);
             ViewBag.MessageId = Message;
             return View(model);
@@ -201,19 +201,18 @@ namespace AspNetGroupBasedPermissions.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CanEditUser")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(EditUserViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var Db = new ApplicationDbContext();
-                var user = Db.Users.First(u => u.UserName == model.UserName);
+                var user = _db.Users.First(u => u.UserName == model.UserName);
                 user.FirstName = model.FirstName;
                 user.LastName = model.LastName;
                 user.Email = model.Email;
-                Db.Entry(user).State = System.Data.Entity.EntityState.Modified;
-                await Db.SaveChangesAsync();
+                _db.Entry(user).State = System.Data.Entity.EntityState.Modified;
+                await _db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
 
@@ -222,11 +221,10 @@ namespace AspNetGroupBasedPermissions.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CanEditUser")]
         public ActionResult Delete(string id = null)
         {
-            var Db = new ApplicationDbContext();
-            var user = Db.Users.First(u => u.UserName == id);
+            var user = _db.Users.First(u => u.UserName == id);
             var model = new EditUserViewModel(user);
             if (user == null)
             {
@@ -238,48 +236,54 @@ namespace AspNetGroupBasedPermissions.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CanEditUser")]
         public ActionResult DeleteConfirmed(string id)
         {
-            var Db = new ApplicationDbContext();
-            var user = Db.Users.First(u => u.UserName == id);
-            Db.Users.Remove(user);
-            Db.SaveChanges();
+            var user = _db.Users.First(u => u.UserName == id);
+            _db.Users.Remove(user);
+            _db.SaveChanges();
             return RedirectToAction("Index");
         }
 
 
-        [Authorize(Roles = "Admin")]
-        public ActionResult UserRoles(string id)
+        [Authorize(Roles = "Admin, CanEditUser")]
+        public ActionResult UserGroups(string id)
         {
-            var Db = new ApplicationDbContext();
-            var user = Db.Users.First(u => u.UserName == id);
-            var model = new SelectUserRolesViewModel(user);
+            var user = _db.Users.First(u => u.UserName == id);
+            var model = new SelectUserGroupsViewModel(user);
             return View(model);
         }
 
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CanEditUser")]
         [ValidateAntiForgeryToken]
-        public ActionResult UserRoles(SelectUserRolesViewModel model)
+        public ActionResult UserGroups(SelectUserGroupsViewModel model)
         {
             if (ModelState.IsValid)
             {
                 var idManager = new IdentityManager();
-                var Db = new ApplicationDbContext();
-                var user = Db.Users.First(u => u.UserName == model.UserName);
-                idManager.ClearUserRoles(user.Id);
-                foreach (var role in model.Roles)
+                var user = _db.Users.First(u => u.UserName == model.UserName);
+                idManager.ClearUserGroups(user.Id);
+                foreach (var group in model.Groups)
                 {
-                    if (role.Selected)
+                    if (group.Selected)
                     {
-                        idManager.AddUserToRole(user.Id, role.RoleName);
+                        idManager.AddUserToGroup(user.Id, group.GroupId);
                     }
                 }
                 return RedirectToAction("index");
             }
             return View();
+        }
+
+
+        [Authorize(Roles = "Admin, CanEditRole, CanEditGroup, User")]
+        public ActionResult UserPermissions(string id)
+        {
+            var user = _db.Users.First(u => u.UserName == id);
+            var model = new UserPermissionsViewModel(user);
+            return View(model);
         }
 
 
