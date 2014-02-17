@@ -1,16 +1,12 @@
-﻿@model AspNetGroupBasedPermissions.Models.SelectUserRolesViewModel
+﻿@model AspNetGroupBasedPermissions.Models.SelectUserGroupsViewModel
+@{ ViewBag.Title = "User Groups"; }
 
-@{
-    ViewBag.Title = "User Roles";
-}
-
-<h2>Roles for user @Html.DisplayFor(model => model.UserName)</h2>
+<h2>Groups for user @Html.DisplayFor(model => model.UserName)</h2>
 <hr />
 
-@using (Html.BeginForm("UserRoles", "Account", FormMethod.Post, new { encType = "multipart/form-data", name = "myform" }))
+@using (Html.BeginForm("UserGroups", "Account", FormMethod.Post, new { encType = "multipart/form-data", name = "myform" }))
 {
     @Html.AntiForgeryToken()
-
     <div class="form-horizontal">
         @Html.ValidationSummary(true)
         <div class="form-group">
@@ -18,30 +14,22 @@
                 @Html.HiddenFor(model => model.UserName)
             </div>
         </div>
-
-        <h4>Select Role Assignments</h4>
+        <h4>Select Group Assignments</h4>
         <br />
         <hr />
-
         <table>
-            
             <tr>
                 <th>
                     Select
                 </th>
                 <th>
-                    Role
-                </th>
-                <th>
-                    Description
+                    Group
                 </th>
             </tr>
-
-            @Html.EditorFor(model => model.Roles)
+            @Html.EditorFor(model => model.Groups)
         </table>
         <br />
         <hr />
-
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
