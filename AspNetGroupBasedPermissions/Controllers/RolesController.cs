@@ -11,6 +11,7 @@ namespace AspNetGroupBasedPermissions.Controllers
     {
         private ApplicationDbContext _db = new ApplicationDbContext();
 
+        [Authorize(Roles = "Admin")]
         public ActionResult Index()
         {
             var rolesList = new List<RoleViewModel>();
