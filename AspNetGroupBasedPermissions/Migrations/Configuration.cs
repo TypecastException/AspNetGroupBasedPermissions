@@ -10,7 +10,7 @@ namespace AspNetGroupBasedPermissions.Migrations
 {
     internal sealed class Configuration : DbMigrationsConfiguration<ApplicationDbContext>
     {
-        private const string InitialUserName = "TestName";
+        private const string InitialUserName = "test@test.com";
         private const string InitialUserFirstName = "TestFirstName";
         private const string InitialUserLastName = "TestLastName";
         private const string InitialUserEmail = "test@test.com";
