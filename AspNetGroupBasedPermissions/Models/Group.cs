@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Collections.Generic;
 
 namespace AspNetGroupBasedPermissions.Models
 {
@@ -14,8 +12,8 @@ namespace AspNetGroupBasedPermissions.Models
 
         public Group(string name) : this()
         {
-            this.Roles = new List<ApplicationRoleGroup>();
-            this.Name = name;
+            Roles = new List<ApplicationRoleGroup>();
+            Name = name;
         }
 
 

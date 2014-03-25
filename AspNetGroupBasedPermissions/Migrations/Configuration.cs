@@ -1,17 +1,20 @@
+using System;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using System.Data.Entity.Validation;
 using System.Linq;
 using AspNetGroupBasedPermissions.Models;
+using Microsoft.AspNet.Identity;
 
 namespace AspNetGroupBasedPermissions.Migrations
 {
     internal sealed class Configuration : DbMigrationsConfiguration<ApplicationDbContext>
     {
-        private const string InitialUserName = "test";
+        private const string InitialUserName = "TestName";
         private const string InitialUserFirstName = "TestFirstName";
         private const string InitialUserLastName = "TestLastName";
         private const string InitialUserEmail = "test@test.com";
-        private const string InitialUserPassword = "test";
+        private const string InitialUserPassword = "Password1";
 
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
         private readonly string[] _groupAdminRoleNames = {"CanEditUser", "CanEditGroup", "User"};
@@ -40,9 +43,17 @@ namespace AspNetGroupBasedPermissions.Migrations
 
         public void AddGroups()
         {
-            foreach (string groupName in _initialGroupNames)
+            foreach (var groupName in _initialGroupNames)
             {
-                _idManager.CreateGroup(groupName);
+
+                try
+                {
+                    _idManager.CreateGroup(groupName);
+                }
+                catch (GroupExistsException)
+                {
+                    // intentionally catched for seeding
+                }
             }
         }
 
@@ -103,12 +114,18 @@ namespace AspNetGroupBasedPermissions.Migrations
             // Be careful here - you  will need to use a password which will 
             // be valid under the password rules for the application, 
             // or the process will abort:
-            _idManager.CreateUser(newUser, InitialUserPassword);
+            var userCreationResult = _idManager.CreateUser(newUser, InitialUserPassword);
+            if (!userCreationResult.Succeeded)
+            {
+                // warn the user that it's seeding went wrong
+                throw new DbEntityValidationException("Could not create InitialUser because: " + String.Join(", ", userCreationResult.Errors));
+            }
         }
 
         // Configure the initial Super-Admin user:
         private void AddUsersToGroups()
         {
+            Console.WriteLine(String.Join(", ", _db.Users.Select(u => u.Email)));
             ApplicationUser user = _db.Users.First(u => u.UserName == InitialUserName);
             IDbSet<Group> allGroups = _db.Groups;
             foreach (Group group in allGroups)
