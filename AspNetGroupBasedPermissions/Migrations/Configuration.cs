@@ -1,45 +1,52 @@
-using AspNetGroupBasedPermissions.Models;
+using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using System.Linq;
+using AspNetGroupBasedPermissions.Models;
 
 namespace AspNetGroupBasedPermissions.Migrations
 {
-    using System;
-    using System.Data.Entity;
-    using System.Data.Entity.Migrations;
-    using System.Linq;
-
     internal sealed class Configuration : DbMigrationsConfiguration<ApplicationDbContext>
     {
-        IdentityManager _idManager = new IdentityManager();
-        ApplicationDbContext _db = new ApplicationDbContext();
+        private const string InitialUserName = "test";
+        private const string InitialUserFirstName = "TestFirstName";
+        private const string InitialUserLastName = "TestLastName";
+        private const string InitialUserEmail = "test@test.com";
+        private const string InitialUserPassword = "test";
+
+        private readonly ApplicationDbContext _db = new ApplicationDbContext();
+        private readonly string[] _groupAdminRoleNames = {"CanEditUser", "CanEditGroup", "User"};
+        private readonly IdentityManager _idManager = new IdentityManager();
+
+        private readonly string[] _initialGroupNames = {"SuperAdmins", "GroupAdmins", "UserAdmins", "Users"};
+
+
+        private readonly string[] _superAdminRoleNames = {"Admin", "CanEditUser", "CanEditGroup", "CanEditRole", "User"};
+        private readonly string[] _userAdminRoleNames = {"CanEditUser", "User"};
+        private readonly string[] _userRoleNames = {"User"};
 
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
         }
 
-
         protected override void Seed(ApplicationDbContext context)
         {
-            this.AddGroups();
-            this.AddRoles();
-            this.AddUsers();
-            this.AddRolesToGroups();
-            this.AddUsersToGroups();
+            AddGroups();
+            AddRoles();
+            AddUsers();
+            AddRolesToGroups();
+            AddUsersToGroups();
         }
-
-        string[] _initialGroupNames = new string[] { "SuperAdmins", "GroupAdmins", "UserAdmins", "Users" };
 
         public void AddGroups()
         {
-            foreach (var groupName in _initialGroupNames)
+            foreach (string groupName in _initialGroupNames)
             {
                 _idManager.CreateGroup(groupName);
             }
         }
 
-
-        void AddRoles()
+        private void AddRoles()
         {
             // Some example initial roles. These COULD BE much more granular:
             _idManager.CreateRole("Admin", "Global Access");
@@ -49,75 +56,62 @@ namespace AspNetGroupBasedPermissions.Migrations
             _idManager.CreateRole("User", "Restricted to business domain activity");
         }
 
-
-        string[] _superAdminRoleNames = new string[] { "Admin", "CanEditUser", "CanEditGroup", "CanEditRole", "User" };
-        string[] _groupAdminRoleNames =
-            new string[] { "CanEditUser", "CanEditGroup", "User" };
-        string[] _userAdminRoleNames =
-            new string[] { "CanEditUser", "User" };
-        string[] _userRoleNames =
-            new string[] { "User" };
-        void AddRolesToGroups()
+        private void AddRolesToGroups()
         {
             // Add the Super-Admin Roles to the Super-Admin Group:
-            var allGroups = _db.Groups;
-            var superAdmins = allGroups.First(g => g.Name == "SuperAdmins");
+            IDbSet<Group> allGroups = _db.Groups;
+            Group superAdmins = allGroups.First(g => g.Name == "SuperAdmins");
             foreach (string name in _superAdminRoleNames)
             {
                 _idManager.AddRoleToGroup(superAdmins.Id, name);
             }
 
             // Add the Group-Admin Roles to the Group-Admin Group:
-            var groupAdmins = _db.Groups.First(g => g.Name == "GroupAdmins");
+            Group groupAdmins = _db.Groups.First(g => g.Name == "GroupAdmins");
             foreach (string name in _groupAdminRoleNames)
             {
                 _idManager.AddRoleToGroup(groupAdmins.Id, name);
             }
 
             // Add the User-Admin Roles to the User-Admin Group:
-            var userAdmins = _db.Groups.First(g => g.Name == "UserAdmins");
+            Group userAdmins = _db.Groups.First(g => g.Name == "UserAdmins");
             foreach (string name in _userAdminRoleNames)
             {
                 _idManager.AddRoleToGroup(userAdmins.Id, name);
             }
 
             // Add the User Roles to the Users Group:
-            var users = _db.Groups.First(g => g.Name == "Users");
+            Group users = _db.Groups.First(g => g.Name == "Users");
             foreach (string name in _userRoleNames)
             {
                 _idManager.AddRoleToGroup(users.Id, name);
             }
         }
 
-
         // Change these to your own:
-        string _initialUserName = "jatten";
-        string _InitialUserFirstName = "John";
-        string _initialUserLastName = "Atten";
-        string _initialUserEmail = "jatten@typecastexception.com";
-        void AddUsers()
+
+        private void AddUsers()
         {
-            var newUser = new ApplicationUser()
+            var newUser = new ApplicationUser
             {
-                UserName = _initialUserName,
-                FirstName = _InitialUserFirstName,
-                LastName = _initialUserLastName,
-                Email = _initialUserEmail
+                UserName = InitialUserName,
+                FirstName = InitialUserFirstName,
+                LastName = InitialUserLastName,
+                Email = InitialUserEmail
             };
 
             // Be careful here - you  will need to use a password which will 
             // be valid under the password rules for the application, 
             // or the process will abort:
-            _idManager.CreateUser(newUser, "Password1");
+            _idManager.CreateUser(newUser, InitialUserPassword);
         }
 
-
         // Configure the initial Super-Admin user:
-        void AddUsersToGroups()
+        private void AddUsersToGroups()
         {
-            var user = _db.Users.First(u => u.UserName == _initialUserName);
-            var allGroups = _db.Groups;
-            foreach (var group in allGroups)
+            ApplicationUser user = _db.Users.First(u => u.UserName == InitialUserName);
+            IDbSet<Group> allGroups = _db.Groups;
+            foreach (Group group in allGroups)
             {
                 _idManager.AddUserToGroup(user.Id, group.Id);
             }
