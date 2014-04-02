@@ -51,23 +51,19 @@ namespace AspNetGroupBasedPermissions.Controllers
                     await SignInAsync(user, model.RememberMe);
                     return RedirectToLocal(returnUrl);
                 }
-                else
-                {
-                    ModelState.AddModelError("", "Invalid username or password.");
-                }
+                
+                ModelState.AddModelError("", "Invalid username or password.");
             }
 
             // If we got this far, something failed, redisplay form
             return View(model);
         }
 
-
         [Authorize(Roles = "Admin, CanEditUser")]
         public ActionResult Register()
         {
             return View();
         }
-
 
         [HttpPost]
         [Authorize(Roles = "Admin, CanEditUser")]
@@ -341,10 +337,8 @@ namespace AspNetGroupBasedPermissions.Controllers
             {
                 return Redirect(returnUrl);
             }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
+            
+            return RedirectToAction("Index", "Home");
         }
 
         #endregion
