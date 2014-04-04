@@ -75,7 +75,7 @@ namespace AspNetGroupBasedPermissions.Controllers
         [Authorize(Roles = "Admin, CanEditGroup")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include="Name")] Group group)
+        public ActionResult Edit([Bind(Include="Id,Name")] Group group)
         {
             if (ModelState.IsValid)
             {
