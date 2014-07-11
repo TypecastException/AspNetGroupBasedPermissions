@@ -38,12 +38,12 @@ namespace AspNetGroupBasedPermissions.Helpers
 
         protected override bool AuthorizeCore(HttpContextBase httpContext)
         {
+            if (httpContext.Session == null) return false;
+            
             var isAuthorized = base.AuthorizeCore(httpContext);
-            if (!isAuthorized)
-                return false;
+            if (!isAuthorized) return false;
 
-            if (httpContext.Session == null)
-                return false;
+            if (!String.IsNullOrEmpty(Roles) || !String.IsNullOrEmpty(Users)) return true;
 
             using (var db = new ApplicationDbContext())
             {
