@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using AspNetGroupBasedPermissions.Helpers;
 
 namespace AspNetGroupBasedPermissions.Controllers
 {
@@ -13,6 +14,7 @@ namespace AspNetGroupBasedPermissions.Controllers
             return View();
         }
 
+         [AuthorizeGroup(Groups = "UserAdmins, Users")]
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
