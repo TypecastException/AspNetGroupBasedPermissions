@@ -86,7 +86,7 @@ namespace AspNetGroupBasedPermissions.Controllers
         }
 
 
-        [Authorize(Roles = "Admin, CanEditUser")]
+        [Authorize(Roles = "Admin, CanEditUser, User")]
         public ActionResult Manage(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
@@ -103,7 +103,7 @@ namespace AspNetGroupBasedPermissions.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, CanEditUser")]
+        [Authorize(Roles = "Admin, CanEditUser, User")]
         public async Task<ActionResult> Manage(ManageUserViewModel model)
         {
             bool hasPassword = HasPassword();

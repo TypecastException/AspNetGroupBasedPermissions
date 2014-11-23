@@ -10,11 +10,18 @@ namespace AspNetGroupBasedPermissions.Migrations
 {
     internal sealed class Configuration : DbMigrationsConfiguration<ApplicationDbContext>
     {
-        private const string InitialUserName = "test@test.com";
+        private const string InitialUserName = "tester";
         private const string InitialUserFirstName = "TestFirstName";
         private const string InitialUserLastName = "TestLastName";
         private const string InitialUserEmail = "test@test.com";
         private const string InitialUserPassword = "Password1";
+
+        private const string VaniallaUserName = "VanillaUser";
+        private const string VaniallaUserFirstName = "VanillaFirstName";
+        private const string VaniallaUserLastName = "VanillaLastName";
+        private const string VaniallaUserEmail = "vanilla@test.com";
+        private const string VaniallaUserPassword = "Password1";
+
 
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
         private readonly string[] _groupAdminRoleNames = {"CanEditUser", "CanEditGroup", "User"};
@@ -120,6 +127,22 @@ namespace AspNetGroupBasedPermissions.Migrations
                 // warn the user that it's seeding went wrong
                 throw new DbEntityValidationException("Could not create InitialUser because: " + String.Join(", ", userCreationResult.Errors));
             }
+
+            var newVaniallaUser = new ApplicationUser {
+              UserName = VaniallaUserName,
+              FirstName = VaniallaUserFirstName,
+              LastName = VaniallaUserLastName,
+              Email = VaniallaUserEmail
+            };
+
+            // Be careful here - you  will need to use a password which will 
+            // be valid under the password rules for the application, 
+            // or the process will abort:
+            userCreationResult = _idManager.CreateUser(newVaniallaUser, VaniallaUserPassword);
+            if (!userCreationResult.Succeeded) {
+              // warn the user that it's seeding went wrong
+              throw new DbEntityValidationException("Could not create VaniallaUser because: " + String.Join(", ", userCreationResult.Errors));
+            }
         }
 
         // Configure the initial Super-Admin user:
@@ -132,6 +155,10 @@ namespace AspNetGroupBasedPermissions.Migrations
             {
                 _idManager.AddUserToGroup(user.Id, group.Id);
             }
+
+            user = _db.Users.FirstOrDefault(u => u.UserName == VaniallaUserName);
+            var plainUsers = allGroups.FirstOrDefault(g => g.Name == "Users");
+            _idManager.AddUserToGroup(user.Id, plainUsers.Id);
         }
     }
 }
