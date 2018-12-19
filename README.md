@@ -21,5 +21,5 @@ You will also need to run Entity Framework Migrations `Update-Database` command 
 After you've cloned the project, go ahead and restore the NuGet Packages from the solution or console. Then run the project. 
 You'll be able to log in and administer the groups and roles as well as users with the "test@test.com" user.
 
-    Username: test@test.com
+    Username: tester
     Password: Password1
